@@ -1,4 +1,4 @@
-package mx.foro.alura.springdoc;
+package mx.foro.alura.infra.springdoc;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Primary;
 public class SpringDocConfigurations {
 
     @Bean
-    @Primary
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .components(new Components()
