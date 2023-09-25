@@ -4,6 +4,7 @@ package mx.foro.alura.domain.topico;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import mx.foro.alura.domain.curso.IdCurso;
 import mx.foro.alura.domain.status.StatusTopico;
 import mx.foro.alura.domain.usuario.IdUsuario;
@@ -14,12 +15,12 @@ public record DatosRegistroTopico(
         @NotBlank
         String mensaje,
 
-        @NotBlank
+        @NotNull
         StatusTopico status,
-        @NotBlank
+        @NotNull
         @Valid
-        IdUsuario autor,
-        @NotBlank
+        IdUsuario usuario,
+        @NotNull
         @Valid
         IdCurso curso
 )

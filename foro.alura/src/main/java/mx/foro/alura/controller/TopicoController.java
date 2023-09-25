@@ -1,5 +1,6 @@
 package mx.foro.alura.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -18,6 +19,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/topicos")
+@SecurityRequirement(name = "bearer-key")
 public class TopicoController {
 
     @Autowired
@@ -27,38 +29,42 @@ public class TopicoController {
         this.topicoRepository = topicoRepository;
     }
 
-    @SecurityRequirement(name = "Bearer Authentication")
+
+    @Transactional
     @PostMapping
+    @Operation(summary = "Registra un topico")
     public ResponseEntity<DatosRespuestaTopico> registrarTopico(@RequestBody @Valid DatosRegistroTopico datosRegistroTopico, UriComponentsBuilder uriComponentsBuilder){
         Topico topico = topicoRepository.save(new Topico(datosRegistroTopico));
         DatosRespuestaTopico datosRespuestaTopico = new DatosRespuestaTopico(topico.getId(), topico.getTitulo(), topico.getMensaje(), topico.getStatus(), topico.getFechaCreacion(),
-                new IdUsuario(topico.getAutor().getId().toString()),
-                new IdCurso(topico.getCurso().getId().toString()));
+                new IdUsuario(topico.getUsuario().getId()),
+                new IdCurso(topico.getCurso().getId()));
 
-        URI uri = uriComponentsBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
-        return ResponseEntity.created(uri).body(datosRespuestaTopico);
+        URI url = uriComponentsBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
+        return ResponseEntity.created(url).body(datosRespuestaTopico);
     }
 
     @GetMapping
+    @Operation(summary = "Obtiene el listado de topicos")
     public ResponseEntity<Page<DatosListadoTopico>> listadoTopicos(@PageableDefault(size = 5, sort = "id") Pageable paginacion){
         //return topicoRepository.findAll(paginacion).map(DatosListadoTopicos::new);
         return ResponseEntity.ok(topicoRepository.findByActivoTrue(paginacion).map(DatosListadoTopico::new));
     }
 
-    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Actualiza los datos de un topico existente")
     @PutMapping
     @Transactional
     public ResponseEntity<DatosRespuestaTopico> actualizarTopico(@RequestBody @Valid DatosActualizarTopicos datosActualizarTopicos){
         Topico topico = topicoRepository.getReferenceById(datosActualizarTopicos.id());
         topico.actualizarTopicos(datosActualizarTopicos);
         return ResponseEntity.ok(new DatosRespuestaTopico(topico.getId(), topico.getTitulo(), topico.getMensaje(), topico.getStatus(), topico.getFechaCreacion(),
-                new IdUsuario(topico.getAutor().getId().toString()),
-                new IdCurso(topico.getCurso().getId().toString())));
+                new IdUsuario(topico.getUsuario().getId()),
+                new IdCurso(topico.getCurso().getId())));
     }
 
-    @SecurityRequirement(name = "Bearer Authentication")
+
     @DeleteMapping("/{id}")
     @Transactional
+    @Operation(summary = "Elimina un topico registrado - inactivo")
     public ResponseEntity eliminarTopico(@PathVariable Long id){
         Topico topico = topicoRepository.getReferenceById(id);
         topico.desactivarTopico();
@@ -66,11 +72,12 @@ public class TopicoController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtiene los registros del topico con ID")
     public ResponseEntity<DatosRespuestaTopico> retornaDatosRopico(@PathVariable Long id){
         Topico topico = topicoRepository.getReferenceById(id);
         DatosRespuestaTopico datosRespuestaTopico = new DatosRespuestaTopico(topico.getId(), topico.getTitulo(), topico.getMensaje(), topico.getStatus(), topico.getFechaCreacion(),
-                new IdUsuario(topico.getAutor().getId().toString()),
-                new IdCurso(topico.getCurso().getId().toString()));
+                new IdUsuario(topico.getUsuario().getId()),
+                new IdCurso(topico.getCurso().getId()));
         return ResponseEntity.ok(datosRespuestaTopico);
     }
 

@@ -35,7 +35,7 @@ public class Topico {
 
     private boolean activo;
     @ManyToOne(fetch = FetchType.LAZY)
-    private Usuario autor;
+    private Usuario usuario;
     @ManyToOne(fetch = FetchType.LAZY)
     private Curso curso;
 
@@ -53,7 +53,7 @@ public class Topico {
         this.titulo = datosRegistroTopico.titulo();
         this.mensaje = datosRegistroTopico.mensaje();
         this.status = datosRegistroTopico.status();
-        this.autor = new Usuario(datosRegistroTopico.autor());
+        this.usuario = new Usuario(datosRegistroTopico.usuario());
         this.curso = new Curso(datosRegistroTopico.curso());
     }
 

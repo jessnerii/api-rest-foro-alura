@@ -22,7 +22,7 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(apiSecret);
             return JWT.create()
-                    .withIssuer("Foro api")
+                    .withIssuer("foro api")
                     .withSubject(usuario.getEmail())
                     .withClaim("id", usuario.getId())
                     .withExpiresAt(generarFechaExpiracion())
@@ -40,13 +40,13 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(apiSecret);
             verifier = JWT.require(algorithm)
-                    .withIssuer("foro")
+                    .withIssuer("foro api")
                     .build().verify(token);
             verifier.getSubject();
         } catch (JWTVerificationException exception) {
             System.out.println(exception.toString());
         }
-        if (verifier.getSubject() == null){
+        if (verifier == null || verifier.getSubject() == null){
             throw new RuntimeException("Invalido");
         }
         return verifier.getSubject();
